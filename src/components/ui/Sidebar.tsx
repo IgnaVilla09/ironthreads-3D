@@ -30,8 +30,12 @@ export function Sidebar() {
       <div className="p-5 flex flex-col gap-6">
         {/* Header */}
         <div>
-          <h1 className="text-lg font-bold tracking-tight">IRONTHREADS</h1>
-          <p className="text-xs text-black/40">3D T-Shirt Customizer</p>
+          <img
+            src="/logo.png"
+            alt="Iron Threads"
+            className="h-16 w-auto"
+          />
+          <p className="text-xs text-black/40">Customizador 3D Iron Threads</p>
         </div>
 
         {/* Sector selector */}
@@ -48,7 +52,7 @@ export function Sidebar() {
         {/* Upload */}
         <section className="flex flex-col gap-2">
           <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">
-            Decal Image
+            Imagen
           </span>
           <Uploaders sector={selectedSector} />
         </section>
@@ -61,12 +65,12 @@ export function Sidebar() {
             className="flex flex-col gap-3"
           >
             <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">
-              Decal Adjustments
+              Ajustes de imagen
             </span>
 
             {showPositionX && (
               <Slider
-                label="Position X"
+                label="Posicion X"
                 min={-0.35}
                 max={0.35}
                 step={0.005}
@@ -78,7 +82,7 @@ export function Sidebar() {
               />
             )}
             <Slider
-              label="Position Y"
+              label="Posicion Y"
               min={-0.35}
               max={0.35}
               step={0.005}
@@ -90,7 +94,7 @@ export function Sidebar() {
             />
             {showPositionZ && (
               <Slider
-                label={isSleeveSector ? 'Position X' : 'Position Z'}
+                label={isSleeveSector ? 'Posicion X' : 'Posicion Z'}
                 min={-0.15}
                 max={0.15}
                 step={0.005}
@@ -102,7 +106,7 @@ export function Sidebar() {
               />
             )}
             <Slider
-              label="Scale"
+              label="Escala"
               min={0.01}
               max={0.35}
               step={0.0025}
@@ -110,7 +114,7 @@ export function Sidebar() {
               onChange={(val) => updateDecalScale(selectedSector, val)}
             />
             <Slider
-              label="Rotation"
+              label="Rotacion"
               min={-Math.PI}
               max={Math.PI}
               step={0.05}
@@ -130,7 +134,7 @@ export function Sidebar() {
           onClick={reset}
           className="text-xs text-black/40 hover:text-red-500 transition-colors self-start"
         >
-          Reset all
+          Reiniciar todo
         </button>
       </div>
     </motion.aside>

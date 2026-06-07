@@ -128,8 +128,8 @@ export function PreviewPanel({ rendererData }: PreviewPanelProps) {
     >
       <div className="p-5 flex flex-col gap-5">
         <div>
-          <h2 className="text-sm font-bold">Export</h2>
-          <p className="text-xs text-black/40">Capture &amp; download</p>
+          <h2 className="text-sm font-bold">Exportar</h2>
+          <p className="text-xs text-black/40">Capturar y descargar</p>
         </div>
 
         {/* Capture previews */}
@@ -165,10 +165,10 @@ export function PreviewPanel({ rendererData }: PreviewPanelProps) {
             onClick={handleCapture}
             loading={status === 'capturing'}
             disabled={isExporting || !rendererData}
-            className="w-full"
-          >
-            {status === 'capturing' ? 'Capturing...' : 'Capture Angles'}
-          </Button>
+              className="w-full"
+            >
+              {status === 'capturing' ? 'Capturando...' : 'Capturar angulos'}
+            </Button>
 
           <Button
             variant="primary"
@@ -182,17 +182,17 @@ export function PreviewPanel({ rendererData }: PreviewPanelProps) {
             }
             onClick={handleExport}
             loading={isExporting && status !== 'capturing'}
-            disabled={isExporting}
-            className="w-full"
-          >
-            {status === 'exported' ? 'Exported!' : 'Download ZIP'}
-          </Button>
-        </div>
+              disabled={isExporting}
+              className="w-full"
+            >
+              {status === 'exported' ? 'Exportado' : 'Descargar ZIP'}
+            </Button>
+          </div>
 
-        <p className="text-[10px] text-black/30 leading-relaxed">
-          Captures 4 angles and packages your design as a ZIP with config,
-          previews, and original images.
-        </p>
+          <p className="text-[10px] text-black/30 leading-relaxed">
+          Captura 4 angulos y empaqueta tu diseno en un ZIP con configuracion,
+          vistas previas e imagenes originales.
+          </p>
       </div>
     </motion.aside>
   )

@@ -19,11 +19,11 @@ export function Uploaders({ sector }: UploadersProps) {
   const handleFile = (file: File) => {
     const allowed = ['image/png', 'image/jpeg', 'image/webp']
     if (!allowed.includes(file.type)) {
-      alert('Use PNG, JPEG, or WebP images.')
+      alert('Usa imagenes PNG, JPEG o WebP.')
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      alert('Max file size is 5MB.')
+      alert('El tamano maximo es 5MB.')
       return
     }
     const reader = new FileReader()
@@ -105,7 +105,7 @@ export function Uploaders({ sector }: UploadersProps) {
           <ImageIcon size={20} className="text-black/30" />
         )}
         <span className="text-[10px] text-black/40 font-medium">
-          {isDragOver ? 'Drop image' : `Upload ${SECTOR_LABELS[sector].toLowerCase()}`}
+          {isDragOver ? 'Suelta la imagen' : `Subir ${SECTOR_LABELS[sector].toLowerCase()}`}
         </span>
       </motion.div>
     </div>
