@@ -5,12 +5,13 @@ import type { Sector } from '../../types'
 interface SectorSelectorProps {
   selected: Sector
   onSelect: (sector: Sector) => void
+  sectors?: Sector[]
 }
 
-export function SectorSelector({ selected, onSelect }: SectorSelectorProps) {
+export function SectorSelector({ selected, onSelect, sectors = SECTOR_LIST }: SectorSelectorProps) {
   return (
     <div className="grid grid-cols-2 gap-1.5">
-      {SECTOR_LIST.map((sector) => {
+      {sectors.map((sector) => {
         const isActive = sector === selected
         return (
           <motion.button

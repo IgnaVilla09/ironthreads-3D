@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import type { WebGLRenderer } from 'three'
-import type { Sector, DecalConfig, ShirtConfig } from '../types'
+import type { Sector, DecalsBySector, ShirtConfig } from '../types'
 
 export async function captureScreenshot(
   gl: WebGLRenderer | null
@@ -31,13 +31,13 @@ export function dataURLToBlob(dataUrl: string): Blob {
 
 export function buildConfigJson(
   shirtColor: string,
-  decals: Record<Sector, DecalConfig | null>
+  decals: DecalsBySector
 ): ShirtConfig {
-  const activeDecals: Partial<Record<Sector, DecalConfig>> = {}
+  const activeDecals: ShirtConfig['decals'] = {}
   for (const key of Object.keys(decals) as Sector[]) {
-    const decal = decals[key as Sector]
-    if (decal) {
-      activeDecals[key as Sector] = decal
+    const sectorDecals = decals[key as Sector]
+    if (sectorDecals.length > 0) {
+      activeDecals[key as Sector] = sectorDecals
     }
   }
   return {
@@ -48,7 +48,7 @@ export function buildConfigJson(
 
 export async function exportToZip(params: {
   shirtColor: string
-  decals: Record<Sector, DecalConfig | null>
+  decals: DecalsBySector
   capturedImages: string[]
 }): Promise<Blob> {
   const { shirtColor, decals, capturedImages } = params
@@ -65,11 +65,10 @@ export async function exportToZip(params: {
   })
 
   for (const key of Object.keys(decals) as Sector[]) {
-    const decal = decals[key as Sector]
-    if (decal) {
+    decals[key as Sector].forEach((decal, index) => {
       const blob = dataURLToBlob(decal.image)
-      zip.file(`decal_${key as string}.png`, blob)
-    }
+      zip.file(`decal_${key as string}_${index + 1}.png`, blob)
+    })
   }
 
   return zip.generateAsync({ type: 'blob' })

@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { Scene } from './components/canvas/Scene'
 import { Sidebar } from './components/ui/Sidebar'
 import { PreviewPanel } from './components/ui/PreviewPanel'
+import { DecalControlsOverlay } from './components/ui/DecalControlsOverlay'
 import * as THREE from 'three'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       <Sidebar />
       <main className="flex-1 relative">
         <Scene onRendererReady={handleRendererReady} />
+        <DecalControlsOverlay />
       </main>
       <PreviewPanel rendererData={rendererData} />
     </div>

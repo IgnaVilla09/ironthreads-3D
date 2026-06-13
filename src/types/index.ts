@@ -1,5 +1,17 @@
 export type Sector = 'body_front' | 'body_back' | 'sleeve_left' | 'sleeve_right'
 
+export type ShirtModel = 'shirt_nuevo' | 'oversize' | 'croptop' | 'longtop' | 'hoodie'
+
+export const SHIRT_MODEL_LABELS: Record<ShirtModel, string> = {
+  shirt_nuevo: 'Clasica',
+  oversize: 'Oversize',
+  croptop: 'Crop Top',
+  longtop: 'Long Top',
+  hoodie: 'Hoodie',
+}
+
+export const SHIRT_MODEL_LIST: ShirtModel[] = ['shirt_nuevo', 'oversize', 'croptop', 'longtop', 'hoodie']
+
 export const SECTOR_LABELS: Record<Sector, string> = {
   body_front: 'Frente',
   body_back: 'Espalda',
@@ -29,6 +41,8 @@ export interface DecalConfig {
   rotation: number
 }
 
+export type DecalsBySector = Record<Sector, DecalConfig[]>
+
 export interface CaptureAngle {
   angle: number
   dataUrl: string
@@ -36,5 +50,5 @@ export interface CaptureAngle {
 
 export interface ShirtConfig {
   shirtColor: string
-  decals: Partial<Record<Sector, DecalConfig>>
+  decals: Partial<Record<Sector, DecalConfig[]>>
 }
