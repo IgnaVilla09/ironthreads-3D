@@ -41,7 +41,7 @@ export function MobileIntroLoader({ visible, progress }: MobileIntroLoaderProps)
                 Cargando visor interactivo
               </p>
               <p className="mt-2 text-sm leading-relaxed text-black/55">
-                Recomendamos usar el sistema en computadora, notebook o tablet en horizontal para una experiencia mas comoda y precisa.
+                Recomendamos usar el sistema en computadora, notebook o tablet en horizontal para una experiencia más cómoda y precisa.
               </p>
             </div>
 
@@ -62,13 +62,13 @@ export function MobileIntroLoader({ visible, progress }: MobileIntroLoaderProps)
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-2xl border border-white/70 bg-white/35 p-3 text-black/60">
                 <Laptop size={18} className="mb-2 text-[#58aec9]" />
-                <p className="text-xs font-semibold uppercase tracking-[0.14em]">Desktop</p>
-                <p className="mt-1 text-[11px] leading-relaxed">Mayor area de trabajo y mejor control del visor.</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em]">Computadora</p>
+                <p className="mt-1 text-[11px] leading-relaxed">Mayor área de trabajo y mejor control del visor.</p>
               </div>
               <div className="rounded-2xl border border-white/70 bg-white/35 p-3 text-black/60">
                 <TabletSmartphone size={18} className="mb-2 text-[#58aec9]" />
                 <p className="text-xs font-semibold uppercase tracking-[0.14em]">Tablet horizontal</p>
-                <p className="mt-1 text-[11px] leading-relaxed">Mejor equilibrio entre vista, zoom y personalizacion.</p>
+                <p className="mt-1 text-[11px] leading-relaxed">Mejor equilibrio entre vista, zoom y personalización.</p>
               </div>
             </div>
           </motion.div>

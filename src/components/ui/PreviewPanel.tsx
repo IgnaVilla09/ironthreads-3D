@@ -63,7 +63,7 @@ function PreviewContent({
       {previewUrls.length > 0 && (
         <div className="grid grid-cols-2 gap-2">
           {previewUrls.map((url, i) => {
-            const labels = ['Front', 'Right', 'Back', 'Left']
+            const labels = ['Frente', 'Derecha', 'Espalda', 'Izquierda']
             return (
               <div
                 key={i}
@@ -71,7 +71,7 @@ function PreviewContent({
               >
                 <img
                   src={url}
-                  alt={labels[i] ?? `Angle ${i}`}
+                  alt={labels[i] ?? `Ángulo ${i}`}
                   className="aspect-square w-full object-cover"
                 />
                 <div className="px-1.5 py-1 text-center text-[9px] font-medium text-black/50">
@@ -93,7 +93,7 @@ function PreviewContent({
           disabled={isExporting || !rendererData}
           className="w-full"
         >
-          {status === 'capturing' ? 'Capturando...' : 'Capturar angulos'}
+          {status === 'capturing' ? 'Capturando...' : 'Capturar ángulos'}
         </Button>
 
         <Button
@@ -110,8 +110,8 @@ function PreviewContent({
       </div>
 
       <p className="text-[10px] leading-relaxed text-black/30">
-        Primero captura los 4 angulos del proyecto. Cuando las vistas esten listas,
-        podras descargar el ZIP con configuracion, previews e imagenes originales.
+        Primero captura los 4 ángulos del proyecto. Cuando las vistas estén listas,
+        podrás descargar el ZIP con configuración, vistas previas e imágenes originales.
       </p>
     </div>
   )
@@ -239,7 +239,7 @@ export function PreviewPanel({ rendererData, isMobileOpen = false, onCloseMobile
             >
               <div className="flex items-center justify-between border-b border-surface-border px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-black">Exportacion</p>
+                  <p className="text-sm font-semibold text-black">Exportación</p>
                   <p className="text-xs text-black/45">Capturas y descarga del ZIP</p>
                 </div>
                 <button

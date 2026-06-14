@@ -138,8 +138,8 @@ export function Sidebar({ isMobileOpen = false, onCloseMobile }: SidebarProps) {
             >
               <div className="flex items-center justify-between border-b border-surface-border px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-black">Personalizacion</p>
-                  <p className="text-xs text-black/45">Configura modelo, sector e imagen</p>
+                  <p className="text-sm font-semibold text-black">Personalización</p>
+                  <p className="text-xs text-black/45">Configurá modelo, sector e imagen</p>
                 </div>
                 <button
                   type="button"
@@ -182,9 +182,9 @@ export function Sidebar({ isMobileOpen = false, onCloseMobile }: SidebarProps) {
                   <AlertTriangle size={18} />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-black">Reiniciar personalizacion</h3>
+                  <h3 className="text-base font-semibold text-black">Reiniciar personalización</h3>
                   <p className="mt-1 text-sm text-black/50">
-                    Se perderan color, decals y ajustes actuales. Esta accion no se puede deshacer.
+                    Se perderán color, diseños y ajustes actuales. Esta acción no se puede deshacer.
                   </p>
                 </div>
               </div>

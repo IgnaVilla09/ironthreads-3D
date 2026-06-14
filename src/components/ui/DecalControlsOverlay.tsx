@@ -58,10 +58,10 @@ export function DecalControlsOverlay() {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-black">Ajustes de imagen</p>
-              <p className="text-xs text-black/45">
-                {SECTOR_LABELS[selectedSector]}
-                {showDecalIndex ? ` · Decal ${selectedDecalIndex[selectedSector] + 1}` : ''}
-              </p>
+                <p className="text-xs text-black/45">
+                  {SECTOR_LABELS[selectedSector]}
+                 {showDecalIndex ? ` · Diseño ${selectedDecalIndex[selectedSector] + 1}` : ''}
+                </p>
               <p className="mt-1 text-[11px] font-medium text-[#58aec9]">
                 Medida estimada: {buildDecalSizeLabel(estimatedSize)}
               </p>
@@ -83,7 +83,7 @@ export function DecalControlsOverlay() {
             <div className="flex flex-col gap-3 p-4">
               {showPositionX && (
                 <Slider
-                  label="Posicion X"
+                  label="Posición X"
                   min={-0.35}
                   max={0.35}
                   step={0.005}
@@ -95,7 +95,7 @@ export function DecalControlsOverlay() {
                 />
               )}
               <Slider
-                label="Posicion Y"
+                label="Posición Y"
                 min={-0.35}
                 max={0.35}
                 step={0.005}
@@ -107,7 +107,7 @@ export function DecalControlsOverlay() {
               />
               {showPositionZ && (
                 <Slider
-                  label={isSleeveSector ? 'Posicion X' : 'Posicion Z'}
+                  label={isSleeveSector ? 'Posición X' : 'Posición Z'}
                   min={-0.15}
                   max={0.15}
                   step={0.005}
@@ -127,7 +127,7 @@ export function DecalControlsOverlay() {
                 onChange={(val) => updateDecalScale(selectedSector, val)}
               />
               <Slider
-                label="Rotacion"
+                label="Rotación"
                 min={-Math.PI}
                 max={Math.PI}
                 step={0.05}

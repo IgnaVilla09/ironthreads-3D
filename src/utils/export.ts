@@ -76,7 +76,7 @@ function buildMeasurementsText(config: ShirtConfig): string {
     lines.push(`Sector: ${SECTOR_LABELS[key]}`)
     sectorDecals.forEach((decal, index) => {
       lines.push(
-        `- Decal ${index + 1}: ${formatCentimeters(decal.estimatedMeasurements.widthCm)} cm de ancho x ${formatCentimeters(decal.estimatedMeasurements.heightCm)} cm de alto`
+        `- Diseño ${index + 1}: ${formatCentimeters(decal.estimatedMeasurements.widthCm)} cm de ancho x ${formatCentimeters(decal.estimatedMeasurements.heightCm)} cm de alto`
       )
     })
     lines.push('')
@@ -116,7 +116,7 @@ export async function exportToZip(params: {
         garmentWorldMeasurements,
       })
       const sizeLabel = buildDecalFileSizeLabel(estimatedMeasurements)
-      zip.file(`decal_${key as string}_${sizeLabel}_${index + 1}.png`, blob)
+      zip.file(`diseno_${key as string}_${sizeLabel}_${index + 1}.png`, blob)
     })
   }
 

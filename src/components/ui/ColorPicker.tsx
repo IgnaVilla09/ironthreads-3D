@@ -36,13 +36,13 @@ export function ColorPicker() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Palette size={16} className="text-black/60" />
-          <span className="text-sm font-medium">Shirt Color</span>
+          <span className="text-sm font-medium">Color de la prenda</span>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="text-xs text-accent hover:text-accent-dark font-medium"
         >
-          {isOpen ? 'Less' : 'More'}
+          {isOpen ? 'Menos' : 'Más'}
         </button>
       </div>
 

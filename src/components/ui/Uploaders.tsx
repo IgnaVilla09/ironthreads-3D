@@ -36,7 +36,7 @@ export function Uploaders({ sector }: UploadersProps) {
       }
 
       image.onerror = () => {
-        reject(new Error('No se pudo leer el tamano de la imagen.'))
+        reject(new Error('No se pudo leer el tamaño de la imagen.'))
         URL.revokeObjectURL(imageUrl)
       }
 
@@ -46,11 +46,11 @@ export function Uploaders({ sector }: UploadersProps) {
   const handleFile = async (file: File) => {
     const allowed = ['image/png', 'image/jpeg', 'image/webp']
     if (!allowed.includes(file.type)) {
-      alert('Usa imagenes PNG, JPEG o WebP.')
+      alert('Usá imágenes PNG, JPEG o WebP.')
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      alert('El tamano maximo es 5MB.')
+      alert('El tamaño máximo es 5 MB.')
       return
     }
 
@@ -103,7 +103,7 @@ export function Uploaders({ sector }: UploadersProps) {
           >
             <img
               src={decal.image}
-              alt={`${SECTOR_LABELS[sector]} decal ${index + 1}`}
+              alt={`${SECTOR_LABELS[sector]} diseño ${index + 1}`}
               className="w-full h-24 object-cover"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors">
@@ -119,7 +119,7 @@ export function Uploaders({ sector }: UploadersProps) {
               </button>
             </div>
             <div className="px-2 py-1 text-[10px] text-black/50 font-medium truncate">
-              {SECTOR_LABELS[sector]} decal {index + 1}
+               {SECTOR_LABELS[sector]} diseño {index + 1}
             </div>
           </button>
         )

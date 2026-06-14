@@ -3,11 +3,11 @@ export type Sector = 'body_front' | 'body_back' | 'sleeve_left' | 'sleeve_right'
 export type ShirtModel = 'shirt_nuevo' | 'oversize' | 'croptop' | 'longtop' | 'hoodie'
 
 export const SHIRT_MODEL_LABELS: Record<ShirtModel, string> = {
-  shirt_nuevo: 'Clasica',
+  shirt_nuevo: 'Clásica',
   oversize: 'Oversize',
   croptop: 'Crop Top',
-  longtop: 'Long Top',
-  hoodie: 'Hoodie',
+  longtop: 'Top largo',
+  hoodie: 'Buzo',
 }
 
 export const SHIRT_MODEL_LIST: ShirtModel[] = ['shirt_nuevo', 'oversize', 'croptop', 'longtop', 'hoodie']

@@ -71,13 +71,13 @@ export function ViewportHints({ visible }: ViewportHintsProps) {
                   </motion.div>
                 </div>
               }
-              title="Zoom"
+              title="Acercar"
               description="Haz pellizco para acercar o alejar el modelo."
             />
             <HintCard
               delay={0.08}
               icon={<RotateCcw size={18} />}
-              title="Rotacion"
+              title="Rotación"
               description="Desliza sobre el visor para girar la prenda en 3D."
             />
           </div>
