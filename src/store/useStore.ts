@@ -6,6 +6,8 @@ interface GarmentWorldMeasurements {
   height: number
 }
 
+const DEFAULT_DECAL_SCALE = 0.12
+
 const DEFAULT_DECAL_POSITIONS: Record<ShirtModel, Record<Sector, [number, number, number]>> = {
   shirt_nuevo: {
     body_front: [0, -0.06, 0.08],
@@ -139,7 +141,9 @@ interface StoreState {
   setSelectedDecalIndex: (sector: Sector, index: number) => void
   addDecal: (sector: Sector, image: string, imageWidth: number, imageHeight: number) => void
   updateDecalPosition: (sector: Sector, position: [number, number, number]) => void
-  updateDecalScale: (sector: Sector, scale: number) => void
+  updateDecalScaleX: (sector: Sector, scaleX: number) => void
+  updateDecalScaleY: (sector: Sector, scaleY: number) => void
+  toggleDecalScaleLink: (sector: Sector) => void
   updateDecalRotation: (sector: Sector, rotation: number) => void
   removeDecal: (sector: Sector, id: string) => void
   setIsExporting: (value: boolean) => void
@@ -195,7 +199,9 @@ export const useStore = create<StoreState>((set) => ({
           imageWidth,
           imageHeight,
           position: [...DEFAULT_DECAL_POSITIONS[state.selectedModel][sector]] as [number, number, number],
-          scale: 0.12,
+          scaleX: DEFAULT_DECAL_SCALE,
+          scaleY: DEFAULT_DECAL_SCALE,
+          isScaleLinked: true,
           rotation: 0,
         },
       ]
@@ -217,9 +223,44 @@ export const useStore = create<StoreState>((set) => ({
       decals: updateActiveDecal(state.decals, state.selectedDecalIndex, sector, (decal) => ({ ...decal, position })),
     })),
 
-  updateDecalScale: (sector, scale) =>
+  updateDecalScaleX: (sector, scaleX) =>
     set((state) => ({
-      decals: updateActiveDecal(state.decals, state.selectedDecalIndex, sector, (decal) => ({ ...decal, scale })),
+      decals: updateActiveDecal(state.decals, state.selectedDecalIndex, sector, (decal) => {
+        if (!decal.isScaleLinked || decal.scaleX <= 0) {
+          return { ...decal, scaleX }
+        }
+
+        const ratio = scaleX / decal.scaleX
+        return {
+          ...decal,
+          scaleX,
+          scaleY: decal.scaleY * ratio,
+        }
+      }),
+    })),
+
+  updateDecalScaleY: (sector, scaleY) =>
+    set((state) => ({
+      decals: updateActiveDecal(state.decals, state.selectedDecalIndex, sector, (decal) => {
+        if (!decal.isScaleLinked || decal.scaleY <= 0) {
+          return { ...decal, scaleY }
+        }
+
+        const ratio = scaleY / decal.scaleY
+        return {
+          ...decal,
+          scaleX: decal.scaleX * ratio,
+          scaleY,
+        }
+      }),
+    })),
+
+  toggleDecalScaleLink: (sector) =>
+    set((state) => ({
+      decals: updateActiveDecal(state.decals, state.selectedDecalIndex, sector, (decal) => ({
+        ...decal,
+        isScaleLinked: !decal.isScaleLinked,
+      })),
     })),
 
   updateDecalRotation: (sector, rotation) =>

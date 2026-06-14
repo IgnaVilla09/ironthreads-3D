@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { ChevronDown, ChevronUp, GripHorizontal, SlidersHorizontal } from 'lucide-react'
+import { ChevronDown, ChevronUp, GripHorizontal, Link2, Link2Off, SlidersHorizontal } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { SECTOR_LABELS } from '../../types'
 import { Slider } from '../shared/Slider'
@@ -14,7 +14,9 @@ export function DecalControlsOverlay() {
   const selectedDecalIndex = useStore((s) => s.selectedDecalIndex)
   const decals = useStore((s) => s.decals)
   const updateDecalPosition = useStore((s) => s.updateDecalPosition)
-  const updateDecalScale = useStore((s) => s.updateDecalScale)
+  const updateDecalScaleX = useStore((s) => s.updateDecalScaleX)
+  const updateDecalScaleY = useStore((s) => s.updateDecalScaleY)
+  const toggleDecalScaleLink = useStore((s) => s.toggleDecalScaleLink)
   const updateDecalRotation = useStore((s) => s.updateDecalRotation)
   const garmentWorldMeasurements = useStore((s) => s.garmentWorldMeasurements)
 
@@ -118,13 +120,39 @@ export function DecalControlsOverlay() {
                   }}
                 />
               )}
+              <div className="flex items-center justify-between rounded-xl border border-surface-border bg-surface/70 px-3 py-2">
+                <div>
+                  <p className="text-xs font-medium text-black/75">Mantener proporción</p>
+                  <p className="text-[11px] text-black/45">Vincula la escala horizontal y vertical.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => toggleDecalScaleLink(selectedSector)}
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
+                    currentDecal.isScaleLinked
+                      ? 'bg-[#58aec9]/12 text-[#58aec9]'
+                      : 'bg-black/5 text-black/55'
+                  }`}
+                >
+                  {currentDecal.isScaleLinked ? <Link2 size={13} /> : <Link2Off size={13} />}
+                  {currentDecal.isScaleLinked ? 'Vinculado' : 'Libre'}
+                </button>
+              </div>
               <Slider
-                label="Escala"
+                label="Escala X"
                 min={0.01}
                 max={0.35}
                 step={0.0025}
-                value={currentDecal.scale}
-                onChange={(val) => updateDecalScale(selectedSector, val)}
+                value={currentDecal.scaleX}
+                onChange={(val) => updateDecalScaleX(selectedSector, val)}
+              />
+              <Slider
+                label="Escala Y"
+                min={0.01}
+                max={0.35}
+                step={0.0025}
+                value={currentDecal.scaleY}
+                onChange={(val) => updateDecalScaleY(selectedSector, val)}
               />
               <Slider
                 label="Rotación"

@@ -165,10 +165,15 @@ const DecalOnMesh = memo(function DecalOnMesh({
   const position = getDecalPosition(decal.position, sector, selectedModel)
   const projectionScale: [number, number, number] = isHoodie
     ? HOODIE_SECTOR_BASE_SCALE[sector].map((value, index) => {
-        const multiplier = decal.scale / DEFAULT_DECAL_SCALE
-        return index === 2 ? value : value * multiplier
+        if (index === 2) return value
+
+        const multiplier = index === 0
+          ? decal.scaleX / DEFAULT_DECAL_SCALE
+          : decal.scaleY / DEFAULT_DECAL_SCALE
+
+        return value * multiplier
       }) as [number, number, number]
-    : [decal.scale * 2, decal.scale * 2, 0.25]
+    : [decal.scaleX * 2, decal.scaleY * 2, 0.25]
   const estimatedSize = estimateDecalMeasurementsCm({
     decal,
     sector,

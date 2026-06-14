@@ -30,46 +30,24 @@ export function formatCentimeters(value: number): string {
   return roundToSingleDecimal(value).toFixed(1)
 }
 
-export function getDecalImageAspectRatio(decal: DecalConfig): number {
-  if (decal.imageWidth <= 0 || decal.imageHeight <= 0) return 1
-  return decal.imageWidth / decal.imageHeight
-}
-
 function getProjectedDecalBoundsWorld(
   decal: DecalConfig,
   selectedModel: ShirtModel,
   sector: Sector
 ): { width: number; height: number } {
   if (selectedModel === 'hoodie') {
-    const multiplier = decal.scale / 0.12
+    const multiplierX = decal.scaleX / 0.12
+    const multiplierY = decal.scaleY / 0.12
 
     return {
-      width: HOODIE_SECTOR_BASE_SCALE[sector][0] * multiplier,
-      height: HOODIE_SECTOR_BASE_SCALE[sector][1] * multiplier,
+      width: HOODIE_SECTOR_BASE_SCALE[sector][0] * multiplierX,
+      height: HOODIE_SECTOR_BASE_SCALE[sector][1] * multiplierY,
     }
   }
 
   return {
-    width: decal.scale * 2,
-    height: decal.scale * 2,
-  }
-}
-
-function containWithinBounds(
-  maxWidth: number,
-  maxHeight: number,
-  aspectRatio: number
-): { width: number; height: number } {
-  if (aspectRatio >= 1) {
-    return {
-      width: maxWidth,
-      height: maxWidth / aspectRatio,
-    }
-  }
-
-  return {
-    width: maxHeight * aspectRatio,
-    height: maxHeight,
+    width: decal.scaleX * 2,
+    height: decal.scaleY * 2,
   }
 }
 
@@ -86,18 +64,13 @@ export function estimateDecalMeasurementsCm(params: {
 
   const garmentMeasurements = MODEL_GARMENT_MEASUREMENTS_CM[selectedModel]
   const projectedBounds = getProjectedDecalBoundsWorld(decal, selectedModel, sector)
-  const containedSize = containWithinBounds(
-    projectedBounds.width,
-    projectedBounds.height,
-    getDecalImageAspectRatio(decal)
-  )
 
   return {
     widthCm: roundToSingleDecimal(
-      ((containedSize.width / garmentWorldMeasurements.width) * garmentMeasurements.width) * DECAL_ESTIMATE_CALIBRATION_FACTOR
+      ((projectedBounds.width / garmentWorldMeasurements.width) * garmentMeasurements.width) * DECAL_ESTIMATE_CALIBRATION_FACTOR
     ),
     heightCm: roundToSingleDecimal(
-      ((containedSize.height / garmentWorldMeasurements.height) * garmentMeasurements.height) * DECAL_ESTIMATE_CALIBRATION_FACTOR
+      ((projectedBounds.height / garmentWorldMeasurements.height) * garmentMeasurements.height) * DECAL_ESTIMATE_CALIBRATION_FACTOR
     ),
   }
 }

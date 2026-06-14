@@ -39,7 +39,9 @@ export interface DecalConfig {
   imageWidth: number
   imageHeight: number
   position: [number, number, number]
-  scale: number
+  scaleX: number
+  scaleY: number
+  isScaleLinked: boolean
   rotation: number
 }
 
