@@ -25,7 +25,25 @@ export function Uploaders({ sector }: UploadersProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
 
-  const handleFile = (file: File) => {
+  const readImageDimensions = (file: File) =>
+    new Promise<{ width: number; height: number }>((resolve, reject) => {
+      const imageUrl = URL.createObjectURL(file)
+      const image = new Image()
+
+      image.onload = () => {
+        resolve({ width: image.naturalWidth, height: image.naturalHeight })
+        URL.revokeObjectURL(imageUrl)
+      }
+
+      image.onerror = () => {
+        reject(new Error('No se pudo leer el tamano de la imagen.'))
+        URL.revokeObjectURL(imageUrl)
+      }
+
+      image.src = imageUrl
+    })
+
+  const handleFile = async (file: File) => {
     const allowed = ['image/png', 'image/jpeg', 'image/webp']
     if (!allowed.includes(file.type)) {
       alert('Usa imagenes PNG, JPEG o WebP.')
@@ -35,10 +53,20 @@ export function Uploaders({ sector }: UploadersProps) {
       alert('El tamano maximo es 5MB.')
       return
     }
+
+    let imageDimensions: { width: number; height: number }
+
+    try {
+      imageDimensions = await readImageDimensions(file)
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'No se pudo procesar la imagen.')
+      return
+    }
+
     const reader = new FileReader()
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        addDecal(sector, reader.result)
+        addDecal(sector, reader.result, imageDimensions.width, imageDimensions.height)
       }
     }
     reader.readAsDataURL(file)

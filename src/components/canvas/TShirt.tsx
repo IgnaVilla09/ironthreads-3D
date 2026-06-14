@@ -1,10 +1,11 @@
-import { useMemo, memo } from 'react'
+import { useEffect, useMemo, memo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Decal, useTexture, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useStore } from '../../store/useStore'
 import { SECTOR_TO_NODE } from '../../types'
 import type { Sector, DecalConfig, ShirtModel } from '../../types'
+import { estimateDecalMeasurementsCm, HOODIE_SECTOR_BASE_SCALE } from '../../utils/decalMeasurements'
 
 const SECTOR_BASE_ROTATION: Record<Sector, readonly [number, number, number]> = {
   body_front: [0, 0, 0],
@@ -18,13 +19,6 @@ const HOODIE_SECTOR_BASE_ROTATION: Record<Sector, readonly [number, number, numb
   body_back: [-Math.PI / 2, Math.PI, 0],
   sleeve_left: [-Math.PI / 2, -Math.PI / 2, 0],
   sleeve_right: [-Math.PI / 2, Math.PI / 2, 0],
-}
-
-const HOODIE_SECTOR_BASE_SCALE: Record<Sector, readonly [number, number, number]> = {
-  body_front: [0.42, 0.52, 0.28],
-  body_back: [0.42, 0.52, 0.28],
-  sleeve_left: [0.44, 0.24, 0.28],
-  sleeve_right: [0.44, 0.24, 0.28],
 }
 
 const HOODIE_SECTOR_POSITION_ANCHOR: Record<Sector, readonly [number, number, number]> = {
@@ -43,6 +37,59 @@ function getDecalPosition(position: [number, number, number], sector: Sector, se
   const [anchorX, anchorY, anchorZ] = HOODIE_SECTOR_POSITION_ANCHOR[sector]
 
   return [anchorX + editorX, anchorY, anchorZ - editorY]
+}
+
+function createRulerTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 512
+  const context = canvas.getContext('2d')
+
+  if (!context) {
+    return new THREE.CanvasTexture(canvas)
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height)
+  context.strokeStyle = 'rgba(88, 174, 201, 0.55)'
+  context.lineWidth = 6
+  context.strokeRect(24, 24, canvas.width - 48, canvas.height - 48)
+
+  context.strokeStyle = 'rgba(88, 174, 201, 0.3)'
+  context.lineWidth = 3
+
+  const steps = 10
+  for (let index = 1; index < steps; index += 1) {
+    const x = 24 + ((canvas.width - 48) * index) / steps
+    const y = 24 + ((canvas.height - 48) * index) / steps
+
+    context.beginPath()
+    context.moveTo(x, 24)
+    context.lineTo(x, index % 5 === 0 ? 72 : 54)
+    context.moveTo(x, canvas.height - 24)
+    context.lineTo(x, index % 5 === 0 ? canvas.height - 72 : canvas.height - 54)
+    context.stroke()
+
+    context.beginPath()
+    context.moveTo(24, y)
+    context.lineTo(index % 5 === 0 ? 72 : 54, y)
+    context.moveTo(canvas.width - 24, y)
+    context.lineTo(index % 5 === 0 ? canvas.width - 72 : canvas.width - 54, y)
+    context.stroke()
+  }
+
+  context.setLineDash([10, 10])
+  context.strokeStyle = 'rgba(88, 174, 201, 0.18)'
+  context.beginPath()
+  context.moveTo(canvas.width / 2, 24)
+  context.lineTo(canvas.width / 2, canvas.height - 24)
+  context.moveTo(24, canvas.height / 2)
+  context.lineTo(canvas.width - 24, canvas.height / 2)
+  context.stroke()
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.needsUpdate = true
+  texture.colorSpace = THREE.SRGBColorSpace
+  return texture
 }
 
 const MODEL_URLS: Record<ShirtModel, string> = {
@@ -100,10 +147,16 @@ const DecalOnMesh = memo(function DecalOnMesh({
   decal,
   sector,
   selectedModel,
+  isActive,
+  garmentWorldMeasurements,
+  rulerTexture,
 }: {
   decal: DecalConfig
   sector: Sector
   selectedModel: ShirtModel
+  isActive: boolean
+  garmentWorldMeasurements: { width: number; height: number } | null
+  rulerTexture: THREE.Texture
 }) {
   const texture = useTexture(decal.image)
   const isHoodie = selectedModel === 'hoodie'
@@ -116,16 +169,44 @@ const DecalOnMesh = memo(function DecalOnMesh({
         return index === 2 ? value : value * multiplier
       }) as [number, number, number]
     : [decal.scale * 2, decal.scale * 2, 0.25]
+  const estimatedSize = estimateDecalMeasurementsCm({
+    decal,
+    sector,
+    selectedModel,
+    garmentWorldMeasurements,
+  })
+  const rulerScale: [number, number, number] = [projectionScale[0] * 1.05, projectionScale[1] * 1.05, projectionScale[2]]
 
   return (
-    <Decal
-      map={texture}
-      position={position}
-      rotation={rotation}
-      scale={projectionScale}
-      depthTest={true}
-      polygonOffsetFactor={-1}
-    />
+    <>
+      <Decal
+        map={texture}
+        position={position}
+        rotation={rotation}
+        scale={projectionScale}
+        depthTest={true}
+        polygonOffsetFactor={-1}
+      />
+      {isActive && estimatedSize.widthCm > 0 && estimatedSize.heightCm > 0 && (
+        <Decal
+          map={rulerTexture}
+          position={position}
+          rotation={rotation}
+          scale={rulerScale}
+          depthTest={true}
+          polygonOffsetFactor={-2}
+        >
+          <meshBasicMaterial
+            transparent
+            opacity={0.28}
+            alphaTest={0.01}
+            depthWrite={false}
+            polygonOffset
+            polygonOffsetFactor={-2}
+          />
+        </Decal>
+      )}
+    </>
   )
 })
 
@@ -134,10 +215,15 @@ export function TShirt() {
   const gltf = useGLTF(MODEL_URLS[selectedModel])
   const shirtColor = useStore((s) => s.shirtColor)
   const decals = useStore((s) => s.decals)
+  const selectedSector = useStore((s) => s.selectedSector)
+  const selectedDecalIndex = useStore((s) => s.selectedDecalIndex)
+  const garmentWorldMeasurements = useStore((s) => s.garmentWorldMeasurements)
+  const setGarmentWorldMeasurements = useStore((s) => s.setGarmentWorldMeasurements)
   const nodeToSectors = useMemo(
     () => createNodeToSectorsMap(MODEL_SECTOR_TO_NODE[selectedModel] ?? SECTOR_TO_NODE),
     [selectedModel]
   )
+  const rulerTexture = useMemo(() => createRulerTexture(), [])
 
   const material = useMemo(
     () =>
@@ -152,6 +238,26 @@ export function TShirt() {
   useFrame(() => {
     material.color.set(shirtColor)
   })
+
+  useEffect(() => {
+    if (!gltf.scene) return
+
+    gltf.scene.updateWorldMatrix(true, false)
+    const bounds = new THREE.Box3().setFromObject(gltf.scene)
+    const size = new THREE.Vector3()
+    bounds.getSize(size)
+
+    if (size.x > 0 && size.y > 0) {
+      setGarmentWorldMeasurements({ width: size.x, height: size.y })
+      return
+    }
+
+    setGarmentWorldMeasurements(null)
+  }, [gltf.scene, selectedModel, setGarmentWorldMeasurements])
+
+  useEffect(() => () => {
+    rulerTexture.dispose()
+  }, [rulerTexture])
 
   const meshData = useMemo(() => {
     if (!gltf.scene) return []
@@ -213,7 +319,15 @@ export function TShirt() {
       {meshData.map(({ key, geometry, sector, matrix }) => (
         <mesh key={key} geometry={geometry} material={material} matrix={matrix} matrixAutoUpdate={false}>
           {sector && decals[sector].map((decal) => (
-            <DecalOnMesh key={decal.id} decal={decal} sector={sector} selectedModel={selectedModel} />
+            <DecalOnMesh
+              key={decal.id}
+              decal={decal}
+              sector={sector}
+              selectedModel={selectedModel}
+              isActive={sector === selectedSector && decals[sector][selectedDecalIndex[sector]]?.id === decal.id}
+              garmentWorldMeasurements={garmentWorldMeasurements}
+              rulerTexture={rulerTexture}
+            />
           ))}
         </mesh>
       ))}

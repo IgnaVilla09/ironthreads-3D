@@ -118,12 +118,14 @@ function PreviewContent({
 }
 
 export function PreviewPanel({ rendererData, isMobileOpen = false, onCloseMobile }: PreviewPanelProps) {
+  const selectedModel = useStore((s) => s.selectedModel)
   const shirtColor = useStore((s) => s.shirtColor)
   const decals = useStore((s) => s.decals)
   const capturedImages = useStore((s) => s.capturedImages)
   const setCapturedImages = useStore((s) => s.setCapturedImages)
   const setIsExporting = useStore((s) => s.setIsExporting)
   const isExporting = useStore((s) => s.isExporting)
+  const garmentWorldMeasurements = useStore((s) => s.garmentWorldMeasurements)
 
   const [status, setStatus] = useState<'idle' | 'capturing' | 'exported'>('idle')
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
@@ -181,9 +183,11 @@ export function PreviewPanel({ rendererData, isMobileOpen = false, onCloseMobile
     setIsExporting(true)
     try {
       const blob = await exportToZip({
+        selectedModel,
         shirtColor,
         decals,
         capturedImages,
+        garmentWorldMeasurements,
       })
 
       const url = URL.createObjectURL(blob)
@@ -200,7 +204,7 @@ export function PreviewPanel({ rendererData, isMobileOpen = false, onCloseMobile
     } finally {
       setIsExporting(false)
     }
-  }, [rendererData, canExport, capturedImages, shirtColor, decals, setIsExporting])
+  }, [rendererData, canExport, capturedImages, shirtColor, decals, garmentWorldMeasurements, selectedModel, setIsExporting])
 
   return (
     <>

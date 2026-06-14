@@ -1,6 +1,11 @@
 import { create } from 'zustand'
 import type { Sector, DecalConfig, DecalsBySector, ShirtModel } from '../types'
 
+interface GarmentWorldMeasurements {
+  width: number
+  height: number
+}
+
 const DEFAULT_DECAL_POSITIONS: Record<ShirtModel, Record<Sector, [number, number, number]>> = {
   shirt_nuevo: {
     body_front: [0, -0.06, 0.08],
@@ -126,18 +131,20 @@ interface StoreState {
   decals: DecalsBySector
   isExporting: boolean
   capturedImages: string[]
+  garmentWorldMeasurements: GarmentWorldMeasurements | null
 
   setSelectedModel: (model: ShirtModel) => void
   setShirtColor: (color: string) => void
   setSelectedSector: (sector: Sector) => void
   setSelectedDecalIndex: (sector: Sector, index: number) => void
-  addDecal: (sector: Sector, image: string) => void
+  addDecal: (sector: Sector, image: string, imageWidth: number, imageHeight: number) => void
   updateDecalPosition: (sector: Sector, position: [number, number, number]) => void
   updateDecalScale: (sector: Sector, scale: number) => void
   updateDecalRotation: (sector: Sector, rotation: number) => void
   removeDecal: (sector: Sector, id: string) => void
   setIsExporting: (value: boolean) => void
   setCapturedImages: (images: string[]) => void
+  setGarmentWorldMeasurements: (value: GarmentWorldMeasurements | null) => void
   reset: () => void
 }
 
@@ -153,6 +160,7 @@ export const useStore = create<StoreState>((set) => ({
   decals: EMPTY_DECALS,
   isExporting: false,
   capturedImages: [],
+  garmentWorldMeasurements: null,
 
   setSelectedModel: (selectedModel) =>
     set((state) => ({
@@ -172,7 +180,7 @@ export const useStore = create<StoreState>((set) => ({
       },
     })),
 
-  addDecal: (sector, image) =>
+  addDecal: (sector, image, imageWidth, imageHeight) =>
     set((state) => {
       const currentSectorDecals = state.decals[sector]
       if (currentSectorDecals.length >= MAX_DECALS_PER_SECTOR[sector]) {
@@ -184,6 +192,8 @@ export const useStore = create<StoreState>((set) => ({
         {
           id: generateId(),
           image,
+          imageWidth,
+          imageHeight,
           position: [...DEFAULT_DECAL_POSITIONS[state.selectedModel][sector]] as [number, number, number],
           scale: 0.12,
           rotation: 0,
@@ -237,6 +247,8 @@ export const useStore = create<StoreState>((set) => ({
 
   setCapturedImages: (images) => set({ capturedImages: images }),
 
+  setGarmentWorldMeasurements: (value) => set({ garmentWorldMeasurements: value }),
+
   reset: () =>
     set({
       selectedModel: 'shirt_nuevo',
@@ -246,5 +258,6 @@ export const useStore = create<StoreState>((set) => ({
       decals: EMPTY_DECALS,
       isExporting: false,
       capturedImages: [],
+      garmentWorldMeasurements: null,
     }),
 }))

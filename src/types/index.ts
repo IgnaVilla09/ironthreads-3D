@@ -36,6 +36,8 @@ export const SECTOR_TO_NODE: Record<Sector, string> = {
 export interface DecalConfig {
   id: string
   image: string
+  imageWidth: number
+  imageHeight: number
   position: [number, number, number]
   scale: number
   rotation: number
@@ -43,12 +45,26 @@ export interface DecalConfig {
 
 export type DecalsBySector = Record<Sector, DecalConfig[]>
 
+export interface EstimatedDecalMeasurements {
+  widthCm: number
+  heightCm: number
+}
+
+export interface ExportedDecalConfig extends DecalConfig {
+  estimatedMeasurements: EstimatedDecalMeasurements
+}
+
 export interface CaptureAngle {
   angle: number
   dataUrl: string
 }
 
 export interface ShirtConfig {
+  selectedModel: ShirtModel
   shirtColor: string
-  decals: Partial<Record<Sector, DecalConfig[]>>
+  garmentMeasurementsCm: {
+    height: number
+    width: number
+  }
+  decals: Partial<Record<Sector, ExportedDecalConfig[]>>
 }
