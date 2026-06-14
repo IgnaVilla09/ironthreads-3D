@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AlertTriangle, RotateCcw } from 'lucide-react'
+import { AlertTriangle, RotateCcw, X } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { SectorSelector } from '../shared/SectorSelector'
 import { ColorPicker } from './ColorPicker'
@@ -9,7 +9,86 @@ import { Button } from '../shared/Button'
 import { SHIRT_MODEL_LABELS, SHIRT_MODEL_LIST } from '../../types'
 import type { Sector } from '../../types'
 
-export function Sidebar() {
+interface SidebarProps {
+  isMobileOpen?: boolean
+  onCloseMobile?: () => void
+}
+
+interface SidebarContentProps {
+  selectedModel: ReturnType<typeof useStore.getState>['selectedModel']
+  setSelectedModel: ReturnType<typeof useStore.getState>['setSelectedModel']
+  selectedSector: Sector
+  setSelectedSector: ReturnType<typeof useStore.getState>['setSelectedSector']
+  availableSectors?: Sector[]
+  onReset: () => void
+}
+
+function SidebarContent({
+  selectedModel,
+  setSelectedModel,
+  selectedSector,
+  setSelectedSector,
+  availableSectors,
+  onReset,
+}: SidebarContentProps) {
+  return (
+    <div className="flex flex-col gap-5 p-4 pb-6 sm:p-5 lg:gap-6">
+      <div>
+        <img src="/logo.png" alt="Iron Threads" className="h-12 w-auto sm:h-14 lg:h-16" />
+        <p className="text-xs text-black/40">Customizador 3D Iron Threads</p>
+      </div>
+
+      <section className="flex flex-col gap-2">
+        <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">Modelo</span>
+        <div className="grid grid-cols-2 gap-2">
+          {SHIRT_MODEL_LIST.map((model) => {
+            const isActive = model === selectedModel
+
+            return (
+              <button
+                key={model}
+                type="button"
+                onClick={() => setSelectedModel(model)}
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'border-[#58aec9] bg-[#58aec9]/10 text-[#58aec9]'
+                    : 'border-surface-border bg-surface-alt text-black/70 hover:border-[#58aec9]/40 hover:text-black'
+                }`}
+              >
+                {SHIRT_MODEL_LABELS[model]}
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">Sector</span>
+        <SectorSelector selected={selectedSector} onSelect={setSelectedSector} sectors={availableSectors} />
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">Imagen</span>
+        <Uploaders sector={selectedSector} />
+      </section>
+
+      <section>
+        <ColorPicker />
+      </section>
+
+      <button
+        type="button"
+        onClick={onReset}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-300 bg-red-50 px-5 py-4 text-sm font-semibold text-red-600 shadow-sm transition-colors hover:border-red-400 hover:bg-red-100 sm:px-6 sm:py-5"
+      >
+        <RotateCcw size={18} />
+        Reiniciar todo
+      </button>
+    </div>
+  )
+}
+
+export function Sidebar({ isMobileOpen = false, onCloseMobile }: SidebarProps) {
   const selectedModel = useStore((s) => s.selectedModel)
   const setSelectedModel = useStore((s) => s.setSelectedModel)
   const selectedSector = useStore((s) => s.selectedSector)
@@ -29,65 +108,60 @@ export function Sidebar() {
 
   return (
     <>
-      <motion.aside
-        initial={{ x: -20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="sidebar-scrollbar w-72 shrink-0 h-full overflow-y-auto border-r border-surface-border bg-white"
-      >
-        <div className="p-5 flex flex-col gap-6">
-          <div>
-            <img src="/logo.png" alt="Iron Threads" className="h-16 w-auto" />
-            <p className="text-xs text-black/40">Customizador 3D Iron Threads</p>
-          </div>
+      <aside className="sidebar-scrollbar hidden h-full w-72 shrink-0 overflow-y-auto border-r border-surface-border bg-white lg:block">
+        <SidebarContent
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          selectedSector={selectedSector}
+          setSelectedSector={setSelectedSector}
+          availableSectors={availableSectors}
+          onReset={() => setShowResetConfirm(true)}
+        />
+      </aside>
 
-          <section className="flex flex-col gap-2">
-            <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">Modelo</span>
-            <div className="grid grid-cols-2 gap-2">
-              {SHIRT_MODEL_LIST.map((model) => {
-                const isActive = model === selectedModel
+      <AnimatePresence>
+        {isMobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-30 bg-black/35 lg:hidden"
+              onClick={onCloseMobile}
+            />
+            <motion.aside
+              initial={{ y: '100%', opacity: 0.9 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0.9 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+              className="sidebar-scrollbar fixed inset-x-0 bottom-0 top-28 z-40 flex flex-col overflow-y-auto rounded-t-[28px] border border-surface-border bg-white shadow-[0_-18px_60px_rgba(0,0,0,0.18)] lg:hidden"
+            >
+              <div className="flex items-center justify-between border-b border-surface-border px-4 py-3">
+                <div>
+                  <p className="text-sm font-semibold text-black">Personalizacion</p>
+                  <p className="text-xs text-black/45">Configura modelo, sector e imagen</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onCloseMobile}
+                  className="rounded-full border border-surface-border p-2 text-black/60 transition-colors hover:bg-surface-alt"
+                >
+                  <X size={18} />
+                </button>
+              </div>
 
-                return (
-                  <button
-                    key={model}
-                    type="button"
-                    onClick={() => setSelectedModel(model)}
-                    className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'border-[#58aec9] bg-[#58aec9]/10 text-[#58aec9]'
-                        : 'border-surface-border bg-surface-alt text-black/70 hover:border-[#58aec9]/40 hover:text-black'
-                    }`}
-                  >
-                    {SHIRT_MODEL_LABELS[model]}
-                  </button>
-                )
-              })}
-            </div>
-          </section>
-
-          <section className="flex flex-col gap-2">
-            <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">Sector</span>
-            <SectorSelector selected={selectedSector} onSelect={setSelectedSector} sectors={availableSectors} />
-          </section>
-
-          <section className="flex flex-col gap-2">
-            <span className="text-xs font-semibold text-black/50 uppercase tracking-wider">Imagen</span>
-            <Uploaders sector={selectedSector} />
-          </section>
-
-          <section>
-            <ColorPicker />
-          </section>
-
-          <button
-            type="button"
-            onClick={() => setShowResetConfirm(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-300 bg-red-50 px-6 py-5 text-sm font-semibold text-red-600 shadow-sm transition-colors hover:border-red-400 hover:bg-red-100"
-          >
-            <RotateCcw size={18} />
-            Reiniciar todo
-          </button>
-        </div>
-      </motion.aside>
+              <SidebarContent
+                selectedModel={selectedModel}
+                setSelectedModel={setSelectedModel}
+                selectedSector={selectedSector}
+                setSelectedSector={setSelectedSector}
+                availableSectors={availableSectors}
+                onReset={() => setShowResetConfirm(true)}
+              />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showResetConfirm && (
